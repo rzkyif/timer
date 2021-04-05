@@ -173,6 +173,7 @@ export default {
         time: this.newTimer.time,
         resetTrigger: false,
       });
+      this.closeAddModal();
       this.resetAddModal();
     },
     loadFunction() {
