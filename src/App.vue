@@ -39,7 +39,11 @@
       <b-table id="activity-table"
         :data="tableData"
         :columns="tableColumns"
-        :selected.sync="selected">
+        :selected.sync="selected"
+        height="95vh"
+        sticky-header
+        :scrollable="false"
+        :mobile-cards="false">
       </b-table>
       <div class="load-save-container">
         <label class="button is-text is-fullwidth" for="f" id="l">Load</label>
@@ -51,7 +55,7 @@
         <b-button type="is-text" @click="openAddModal">Add Timer</b-button>
       </div>
       <b-tabs id="timer-tabs" type="is-boxed">
-        <b-tab-item v-for="timer in timers" :key="timer.name" :label="timer.name">
+        <b-tab-item v-for="timer in timers" :key="timer.id" :label="timer.name">
           <Timer :max="timer.time" :resetTrigger="timer.resetTrigger"></Timer>
           <b-button class="reset-button" @click="timer.resetTrigger = !timer.resetTrigger">Reset</b-button>
         </b-tab-item>
@@ -153,6 +157,15 @@ export default {
       let seconds = totalSeconds % 60;
       return `${hours > 0 ? hours+'h ' : ''}${minutes > 0 ? minutes+'m ' : ''}${seconds+'s'}`
     },
+    timeToSeconds(time) {
+      let clean = time.replace(' ', '');
+      let s1 = clean.includes('h') ? clean.split('h') : ['0', clean];
+      let hours = parseInt(s1[0]);
+      let s2 = s1[1].includes('m') ? s1[1].split('m') : ['0', s1[1]];
+      let minutes = parseInt(s2[0])
+      let seconds = parseInt(s2[1].split('s')[0]);
+      return hours*3600 + minutes*60 + seconds;
+    },
     resetAddModal() {
       this.newTimer.name = "";
       this.newTimer.hours = 0;
@@ -183,12 +196,30 @@ export default {
       })
     },
     loadJSON(jsonString) {
-      this.tableData = JSON.parse(jsonString);
+      let events = JSON.parse(jsonString);
+      this.tableData = [];
+      let id = 1;
+      for (const event of events) {
+        this.tableData.push({
+          id,
+          event: event.name,
+          displayTime: '',
+          time: this.timeToSeconds(event.duration),
+        });
+        id++;
+      }
       this.selected = this.tableData[0];
       this.processDataTime();
     },
     saveJSON() {
-      var json = JSON.stringify(this.tableData, null, 2);
+      let events = []
+      for (const event of this.tableData) {
+        events.push({
+          name: event.event,
+          duration: this.secondsToTime(event.time)
+        });
+      }
+      var json = JSON.stringify(events, null, 2);
 
       let dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(json);
       let defaultName = 'activity_data.json';
@@ -246,7 +277,6 @@ export default {
 .load-save-container {
   display: flex;
   flex-direction: row;
-  margin-top: auto;
   width: 100%;
 }
 .reset-button {
