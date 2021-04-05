@@ -35,7 +35,7 @@
         </div>
       </div>
     </b-modal>
-    <div id="sidebar">
+    <div id="sidebar" v-if="showKegiatan">
       <b-table id="activity-table"
         :data="tableData"
         :columns="tableColumns"
@@ -54,11 +54,14 @@
       <div class="add-timer">
         <b-button type="is-text" @click="openAddModal">Add Timer</b-button>
       </div>
-      <b-tabs id="timer-tabs" type="is-boxed">
-        <b-tab-item v-for="timer in timers" :key="timer.id" :label="timer.name">
-          <Timer :max="timer.time" :resetTrigger="timer.resetTrigger"></Timer>
-          <b-button class="reset-button" @click="timer.resetTrigger = !timer.resetTrigger">Reset</b-button>
-        </b-tab-item>
+      <b-button type="is-text" v-if="!showKegiatan" @click="showKegiatan = true" id="solo-load-button">Show Kegiatan</b-button>
+      <b-tabs id="timer-tabs" type="is-boxed" :animated="false">
+        <div v-for="timer in timers" :key="timer.id">
+          <b-tab-item v-if="timer.name !== 'Kegiatan' || showKegiatan" :label="timer.name">
+            <Timer :max="timer.time" :resetTrigger="timer.resetTrigger"></Timer>
+            <b-button class="reset-button" @click="timer.resetTrigger = !timer.resetTrigger">Reset</b-button>
+          </b-tab-item>
+        </div>
       </b-tabs>
     </div>
     <input id="f" type="file" @change="loadFunction"/>
@@ -139,6 +142,7 @@ export default {
       },
       selected: null,
       isAddModalOpen: false,
+      showKegiatan: false,
     }
   },
   mounted() {
@@ -155,7 +159,7 @@ export default {
       let hours = Math.floor(totalSeconds / 3600);
       let minutes = Math.floor(totalSeconds / 60) % 60;
       let seconds = totalSeconds % 60;
-      return `${hours > 0 ? hours+'h ' : ''}${minutes > 0 ? minutes+'m ' : ''}${seconds+'s'}`
+      return `${hours > 0 ? hours+'h ' : ''}${minutes > 0 ? minutes+'m ' : ''}${(seconds>0 || (hours==0 && minutes==0)) ? seconds+'s' : ''}`
     },
     timeToSeconds(time) {
       let clean = time.replace(' ', '');
@@ -163,7 +167,8 @@ export default {
       let hours = parseInt(s1[0]);
       let s2 = s1[1].includes('m') ? s1[1].split('m') : ['0', s1[1]];
       let minutes = parseInt(s2[0])
-      let seconds = parseInt(s2[1].split('s')[0]);
+      let s3 = s2[1].includes('s') ? s2[1].split('s') : ['0', s2[1]];
+      let seconds = parseInt(s3[0]);
       return hours*3600 + minutes*60 + seconds;
     },
     resetAddModal() {
@@ -256,6 +261,7 @@ export default {
 #content {
   display: flex;
   flex-direction: column;
+  height: 100vh;
   width: 100%;
   padding: 20px 40px;
   background-color: #f8f8f8;
@@ -297,5 +303,10 @@ export default {
 }
 #f {
   display: none;
+}
+#solo-load-button {
+  position: fixed;
+  bottom: 20px;
+  left: 40px;
 }
 </style>

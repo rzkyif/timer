@@ -92,8 +92,8 @@ export default {
       let hours = Math.floor(totalSeconds / 3600);
       let minutes = Math.floor(totalSeconds / 60) % 60;
       let seconds = totalSeconds % 60;
-      return `${hours > 0 ? hours+'h ' : ''}${minutes > 0 ? minutes+'m ' : ''}${seconds+'s'}`
-    }
+      return `${hours > 0 ? hours+'h ' : ''}${minutes > 0 ? minutes+'m ' : ''}${(seconds>0 || (hours==0 && minutes==0)) ? seconds+'s' : ''}`
+    },
   },
   destroyed() {
     if (this.timer !== null) {
