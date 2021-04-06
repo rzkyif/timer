@@ -164,7 +164,7 @@ export default {
   width: 106%;
   border-radius: 53%;
   border-style: solid;
-  border-width: 10px;
+  border-width: 20px;
 }
 
 .hidden {
