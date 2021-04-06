@@ -4,14 +4,14 @@
       :diameter="diameter"
       :stroke-width="thickness"
       :inner-stroke-width="thickness-10"
-      :start-color="'#ffd000'"
-      :stop-color="'#ffd000'"
+      :start-color="color"
+      :stop-color="color"
       :total-steps="max"
       :completed-steps="value"
       :timing-func="'ease'">
-      <span class="timer-center-text">{{ remaining }}</span>
+      <span class="timer-center-text" :style="textStyle">{{ remaining }}</span>
     </radial-progress-bar>
-    <div class="circle" v-if="this.timer !== null"></div>
+    <div class="circle" v-if="this.timer !== null" :style="circleStyle"></div>
   </div>
 </template>
 
@@ -29,6 +29,10 @@ export default {
       type: Number,
       default: 50
     },
+    color: {
+      type: String,
+      default: '#ffc400'
+    },
     max: {
       type: Number,
       default: 3
@@ -37,9 +41,9 @@ export default {
       type: Boolean,
       default: false
     },
-    running: {
-      type: Boolean,
-      default: false
+    state: {
+      type: String,
+      default: 'off'
     }
   },
   components: {
@@ -49,11 +53,22 @@ export default {
     return {
       value: 0,
       timer: null,
+      audio: new Audio('alarm.mp3')
     }
   },
   computed: {
     remaining() {
       return this.secondsToTime(this.max - this.value);
+    },
+    circleStyle() {
+      return {
+        borderColor: this.color
+      }
+    },
+    textStyle() {
+      return {
+        color: this.color
+      }
     }
   },
   watch: {
@@ -68,23 +83,27 @@ export default {
           if (this.value < this.max) {
             this.value += 1;
           } else {
-            this.stop();
+            this.audio.play();
+            this.stop(true);
           }
         }, 1000)
-        this.$emit('update:running', true)
+        this.$emit('update:state', 'on')
       } else {
         this.reset();
       }
     },
-    stop() {
+    stop(finish=false) {
       clearInterval(this.timer);
       this.timer = null;
-      this.$emit('update:running', false)
+      this.$emit('update:state', finish ? 'finished' : 'off')
     },
     reset() {
       if (this.timer !== null) {
         this.stop();
       }
+      this.$emit('update:state', 'off')
+      this.audio.pause();
+      this.audio.currentTime = 0;
       this.value = 0;
     },
     toggle() {
@@ -144,7 +163,8 @@ export default {
   height: 106%;
   width: 106%;
   border-radius: 53%;
-  border: $primary solid 20px;
+  border-style: solid;
+  border-width: 10px;
 }
 
 .hidden {

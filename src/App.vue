@@ -58,14 +58,19 @@
         <b-tab-item v-for="timer in displayTimers" :key="timer.name">
           <template #header>
             <b-icon 
-              v-if="timer.running"
+              v-if="timer.state == 'on'"
               pack="fas"
               icon="spinner"
               custom-class="fa-pulse">
             </b-icon>
+            <b-icon 
+              v-if="timer.state == 'finished'"
+              pack="fas"
+              icon="exclamation">
+            </b-icon>
             <span>{{timer.name}}</span>
           </template>
-          <Timer :max="timer.time" :resetTrigger="timer.resetTrigger" :diameter="windowMin*0.6" :running.sync="timer.running"></Timer>
+          <Timer :max="timer.time" :resetTrigger="timer.resetTrigger" :diameter="windowMin*0.6" :state.sync="timer.state" :color="timer.color"></Timer>
           <b-button class="reset-button" @click="timer.resetTrigger = !timer.resetTrigger">Reset</b-button>
         </b-tab-item>
       </b-tabs>
@@ -113,38 +118,44 @@ export default {
         {
           name: 'Kegiatan',
           time: 30,
-          running: false,
-          resetTrigger: false
+          state: 'off',
+          resetTrigger: false,
+          color: '#00c8ff'
         },
         {
           name: '30',
           time: 30,
-          running: false,
-          resetTrigger: false
+          state: 'off',
+          resetTrigger: false,
+          color: '#ffc400'
         },
         {
           name: '20',
           time: 20,
-          running: false,
-          resetTrigger: false
+          state: 'off',
+          resetTrigger: false,
+          color: '#ffc400'
         },
         {
           name: '15',
           time: 15,
-          running: false,
-          resetTrigger: false
+          state: 'off',
+          resetTrigger: false,
+          color: '#ffc400'
         },
         {
           name: '10',
           time: 10,
-          running: false,
-          resetTrigger: false
+          state: 'off',
+          resetTrigger: false,
+          color: '#ffc400'
         },
         {
           name: '5',
           time: 5,
-          running: false,
-          resetTrigger: false
+          state: 'off',
+          resetTrigger: false,
+          color: '#ffc400'
         }
       ],
       newTimer: {
@@ -210,8 +221,9 @@ export default {
         this.timers.push({
           name: this.newTimer.name,
           time,
-          running: false,
+          state: 'off',
           resetTrigger: false,
+          color: '#ffc400'
         });
       }
       this.closeAddModal();
