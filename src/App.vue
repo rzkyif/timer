@@ -54,7 +54,7 @@
       <div class="add-timer">
         <b-button type="is-text" @click="openAddModal">Add Timer</b-button>
       </div>
-      <b-tabs id="timer-tabs" type="is-boxed" :animated="false">
+      <b-tabs id="timer-tabs" type="is-boxed">
         <b-tab-item v-for="timer in displayTimers" :key="timer.name">
           <template #header>
             <b-icon 
@@ -205,14 +205,17 @@ export default {
       this.isAddModalOpen = false;
     },
     addTimer() {
-      this.timers.push({
-        name: this.newTimer.name,
-        time: this.newTimer.hours*3600 + this.newTimer.minutes*60 + this.newTimer.seconds,
-        running: false,
-        resetTrigger: false,
-      });
-      this.closeAddModal();
-      this.resetAddModal();
+      let time = this.newTimer.hours*3600 + this.newTimer.minutes*60 + this.newTimer.seconds;
+      if (time > 0) {
+        this.timers.push({
+          name: this.newTimer.name,
+          time,
+          running: false,
+          resetTrigger: false,
+        });
+        this.closeAddModal();
+        this.resetAddModal();
+      }
     },
     loadFunction() {
       let loadFile = document.getElementById("f");
