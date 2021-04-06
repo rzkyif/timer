@@ -62,12 +62,14 @@ export default {
     },
     circleStyle() {
       return {
-        borderColor: this.color
+        borderColor: this.color,
+        borderWidth: (this.thickness * 2/5) + 'px'
       }
     },
     textStyle() {
       return {
-        color: this.color
+        color: this.color,
+        fontSize: (this.thickness*3) + 'px'
       }
     }
   },
@@ -138,7 +140,6 @@ export default {
   transform: translate(-50%, -50%);
   font-family: Avenir, Helvetica, Arial, sans-serif;
   font-weight: bold;
-  font-size: 150px;
   white-space: nowrap;
   text-align: center;
   color: $primary;
@@ -160,11 +161,10 @@ export default {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  height: 106%;
-  width: 106%;
+  height: 108%;
+  width: 108%;
   border-radius: 53%;
   border-style: solid;
-  border-width: 20px;
 }
 
 .hidden {

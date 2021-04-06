@@ -11,23 +11,19 @@
           <b-field label="Name">
               <b-input value="Timer" v-model="newTimer.name"></b-input>
           </b-field>
-          <div class="card-horizontal-content">
-            <div>
-              <b-field label="Hours">
-                <b-numberinput value="0" min="0" max="99" v-model="newTimer.hours"></b-numberinput>
-              </b-field>
-            </div>
-            <div>
-              <b-field label="Minutes">
-                <b-numberinput value="0" min="0" max="59" v-model="newTimer.minutes"></b-numberinput>
-              </b-field>
-            </div>
-            <div>
-              <b-field label="Seconds">
-                <b-numberinput value="0" min="0" max="59" v-model="newTimer.seconds"></b-numberinput>
-              </b-field>
-            </div>
-          </div>
+          <b-field label="Color" :style="{position: 'relative'}">
+            <div class="circle" :style="{backgroundColor: newTimer.color}"></div>
+            <verte value="#ffc400" id="color-picker" display="widget" :show-history="false" model="hex" @input="(color) => newTimer.color = color"></verte>
+          </b-field>
+          <b-field label="Hours">
+            <b-numberinput value="0" min="0" max="99" v-model="newTimer.hours"></b-numberinput>
+          </b-field>
+          <b-field label="Minutes">
+            <b-numberinput value="0" min="0" max="59" v-model="newTimer.minutes"></b-numberinput>
+          </b-field>
+          <b-field label="Seconds">
+            <b-numberinput value="0" min="0" max="59" v-model="newTimer.seconds"></b-numberinput>
+          </b-field>
         </div>
         <div class="card-footer">
           <a class="card-footer-item" @click="closeAddModal">Close</a>
@@ -39,7 +35,7 @@
       <b-table id="activity-table"
         :data="tableData"
         :columns="tableColumns"
-        :selected.sync="selected"
+        :selected.sync="selectedData"
         height="95vh"
         sticky-header
         :scrollable="false"
@@ -51,11 +47,8 @@
       </div>
     </div>
     <div id="content">
-      <div class="add-timer">
-        <b-button type="is-text" @click="openAddModal">Add Timer</b-button>
-      </div>
-      <b-tabs id="timer-tabs" type="is-boxed">
-        <b-tab-item v-for="timer in displayTimers" :key="timer.name">
+      <b-tabs id="timer-tabs" type="is-boxed" v-model="selectedTimer">
+        <b-tab-item v-for="timer in timers" :key="timer.name" :visible="timer.visible">
           <template #header>
             <b-icon 
               v-if="timer.state == 'on'"
@@ -70,11 +63,15 @@
             </b-icon>
             <span>{{timer.name}}</span>
           </template>
-          <Timer :max="timer.time" :resetTrigger="timer.resetTrigger" :diameter="windowMin*0.6" :state.sync="timer.state" :color="timer.color"></Timer>
+          <Timer :max="timer.time" :resetTrigger="timer.resetTrigger" :diameter="windowMin*0.6" :thickness="windowMin*0.05" :state.sync="timer.state" :color="timer.color"></Timer>
           <b-button class="reset-button" @click="timer.resetTrigger = !timer.resetTrigger">Reset</b-button>
         </b-tab-item>
       </b-tabs>
-      <div>
+      <div class="modify-timer">
+        <b-button type="is-text" @click="openAddModal">Add Timer</b-button>
+        <b-button type="is-text" @click="deleteTimer">Delete Timer</b-button>
+      </div>
+      <div v-if="windowDimensions[1] > 1000">
         <b-button type="is-text" @click="showKegiatan = !showKegiatan" id="solo-load-button">{{showKegiatan ? 'Hide' : 'Show'}} Kegiatan</b-button>
       </div>
     </div>
@@ -84,11 +81,14 @@
 
 <script>
 import Timer from './components/Timer.vue'
+import verte from 'verte'
+import 'verte/dist/verte.css';
 
 export default {
   name: 'App',
   components: {
-    Timer
+    Timer,
+    verte
   },
   data() {
     return {
@@ -120,58 +120,67 @@ export default {
           time: 30,
           state: 'off',
           resetTrigger: false,
-          color: '#24dcdc'
+          color: '#24dcdc',
+          visible: false,
         },
         {
           name: '30',
           time: 30,
           state: 'off',
           resetTrigger: false,
-          color: '#ffc400'
+          color: '#ffc400',
+          visible: true,
         },
         {
           name: '20',
           time: 20,
           state: 'off',
           resetTrigger: false,
-          color: '#ffc400'
+          color: '#ffc400',
+          visible: true,
         },
         {
           name: '15',
           time: 15,
           state: 'off',
           resetTrigger: false,
-          color: '#ffc400'
+          color: '#ffc400',
+          visible: true,
         },
         {
           name: '10',
           time: 10,
           state: 'off',
           resetTrigger: false,
-          color: '#ffc400'
+          color: '#ffc400',
+          visible: true,
         },
         {
           name: '5',
           time: 5,
           state: 'off',
           resetTrigger: false,
-          color: '#ffc400'
+          color: '#ffc400',
+          visible: true,
         }
       ],
       newTimer: {
         name: '',
         hours: 0,
         minutes: 0,
-        seconds: 0
+        seconds: 0,
+        color: '#ffc400'
       },
-      selected: null,
+      selectedData: null,
+      selectedTimer: 1,
       isAddModalOpen: false,
       showKegiatan: false,
-      windowMin: Math.min(window.innerHeight, window.innerWidth)
+      windowMin: Math.min(window.innerHeight, window.innerWidth),
+      windowDimensions: [window.innerHeight, window.innerWidth]
     }
   },
   mounted() {
-    this.selected = this.tableData[0];
+    this.selectedData = this.tableData[0];
     this.processDataTime();
     window.addEventListener('resize', this.onResize)
   },
@@ -181,6 +190,7 @@ export default {
   methods: {
     onResize() {
       this.windowMin = Math.min(window.innerHeight, window.innerWidth);
+      this.windowDimensions = [window.innerHeight, window.innerWidth];
     },
     processDataTime() {
       for (const row of this.tableData) {
@@ -223,11 +233,18 @@ export default {
           time,
           state: 'off',
           resetTrigger: false,
-          color: '#ffc400'
+          color: this.newTimer.color,
+          visible: true,
         });
       }
       this.closeAddModal();
       this.resetAddModal();
+    },
+    deleteTimer() {
+      if (this.selectedTimer > 0) {
+        this.timers.splice(this.selectedTimer, 1);
+        this.selectedTimer--;
+      }
     },
     loadFunction() {
       let loadFile = document.getElementById("f");
@@ -248,7 +265,7 @@ export default {
         });
         id++;
       }
-      this.selected = this.tableData[0];
+      this.selectedData = this.tableData[0];
       this.processDataTime();
     },
     saveJSON() {
@@ -270,14 +287,15 @@ export default {
     }
   },
   watch: {
-    selected: function() {
-      this.timers[0].time = this.selected.time;
+    selectedData: function() {
+      this.timers[0].time = this.selectedData.time;
       this.timers[0].resetTrigger = !this.timers[0].resetTrigger;
-    }
-  },
-  computed: {
-    displayTimers() {
-      return this.timers.filter((x) => x.name !== 'Kegiatan' || this.showKegiatan);
+    },
+    showKegiatan: function() {
+      this.timers[0].visible = this.showKegiatan;
+      if (!this.showKegiatan && this.selectedTimer == 0 && this.timers.length > 1) {
+        this.selectedTimer = 1;
+      }
     }
   }
 }
@@ -296,7 +314,6 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  margin: -1px;
 }
 #content {
   position: relative;
@@ -326,22 +343,27 @@ export default {
   display: flex;
   flex-direction: row;
   width: 100%;
+  max-height: 5vh;
 }
 .reset-button {
-  margin-top: 50px;
+  margin-top: 20px;
 }
-.add-timer {
+.modify-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   position: absolute;
-  top: 20px;
+  bottom: 20px;
   right: 40px;
 }
-.card-horizontal-content {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-}
-.card-horizontal-content > div {
-  padding: 0px 10px;
+.circle {
+  position: absolute;
+  top: 5px;
+  right: 0px;
+  width: 16px; 
+  height: 16px; 
+  border-radius: 8px;
+  border: #4a4a4a solid 1px;
 }
 #f {
   display: none;

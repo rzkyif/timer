@@ -10,6 +10,7 @@
   "dependencies": {
     "buefy": "^0.9.5",
     "core-js": "^3.6.5",
+    "verte": "^0.0.12",
     "vue": "^2.6.11",
     "vue-radial-progress": "^0.3.2"
   },
