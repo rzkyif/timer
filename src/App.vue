@@ -120,7 +120,7 @@ export default {
           time: 30,
           state: 'off',
           resetTrigger: false,
-          color: '#00c8ff'
+          color: '#24dcdc'
         },
         {
           name: '30',
