@@ -54,15 +54,15 @@
       <div class="add-timer">
         <b-button type="is-text" @click="openAddModal">Add Timer</b-button>
       </div>
-      <b-button type="is-text" v-if="!showKegiatan" @click="showKegiatan = true" id="solo-load-button">Show Kegiatan</b-button>
       <b-tabs id="timer-tabs" type="is-boxed" :animated="false">
-        <div v-for="timer in timers" :key="timer.id">
-          <b-tab-item v-if="timer.name !== 'Kegiatan' || showKegiatan" :label="timer.name">
-            <Timer :max="timer.time" :resetTrigger="timer.resetTrigger"></Timer>
-            <b-button class="reset-button" @click="timer.resetTrigger = !timer.resetTrigger">Reset</b-button>
-          </b-tab-item>
-        </div>
+        <b-tab-item v-for="timer in displayTimers" :key="timer.name" :label="timer.name">
+          <Timer :max="timer.time" :resetTrigger="timer.resetTrigger" :diameter="windowMin*0.6"></Timer>
+          <b-button class="reset-button" @click="timer.resetTrigger = !timer.resetTrigger">Reset</b-button>
+        </b-tab-item>
       </b-tabs>
+      <div>
+        <b-button type="is-text" @click="showKegiatan = !showKegiatan" id="solo-load-button">{{showKegiatan ? 'Hide' : 'Show'}} Kegiatan</b-button>
+      </div>
     </div>
     <input id="f" type="file" @change="loadFunction"/>
   </div>
@@ -79,8 +79,8 @@ export default {
   data() {
     return {
       tableData: [
-        {id: 1, event: "A", displayTime: "", time: 10},
-        {id: 2, event: "B", displayTime: "", time: 5},
+        {id: 1, event: "Kegiatan A", displayTime: "", time: 10},
+        {id: 2, event: "Kegiatan B", displayTime: "", time: 5},
       ],
       tableColumns: [
         {
@@ -143,13 +143,21 @@ export default {
       selected: null,
       isAddModalOpen: false,
       showKegiatan: false,
+      windowMin: Math.min(window.innerHeight, window.innerWidth)
     }
   },
   mounted() {
     this.selected = this.tableData[0];
     this.processDataTime();
+    window.addEventListener('resize', this.onResize)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onResize)
   },
   methods: {
+    onResize() {
+      this.windowMin = Math.min(window.innerHeight, window.innerWidth);
+    },
     processDataTime() {
       for (const row of this.tableData) {
         row.displayTime = this.secondsToTime(row.time)
@@ -239,6 +247,11 @@ export default {
       this.timers[0].time = this.selected.time;
       this.timers[0].resetTrigger = !this.timers[0].resetTrigger;
     }
+  },
+  computed: {
+    displayTimers() {
+      return this.timers.filter((x) => x.name !== 'Kegiatan' || this.showKegiatan);
+    }
   }
 }
 </script>
@@ -259,6 +272,7 @@ export default {
   margin: -1px;
 }
 #content {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -271,6 +285,7 @@ export default {
 }
 .tab-item {
   display: flex;
+  position: relative;
   padding-top: 25px;
   height: 85vh;
   flex-direction: column;
@@ -305,8 +320,11 @@ export default {
   display: none;
 }
 #solo-load-button {
-  position: fixed;
+  position: absolute;
   bottom: 20px;
   left: 40px;
+}
+tr:hover {
+  cursor: pointer;
 }
 </style>

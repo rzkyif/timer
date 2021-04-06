@@ -1,5 +1,5 @@
 <template>
-  <div class="timer-container" @click="toggle()">
+  <div class="timer-container" @click="toggle()" :diameter="diameter">
     <radial-progress-bar
       :diameter="diameter"
       :stroke-width="thickness"
@@ -9,9 +9,9 @@
       :total-steps="max"
       :completed-steps="value"
       :timing-func="'ease'">
-      <div class="circle" v-if="this.timer !== null"></div>
       <span class="timer-center-text">{{ remaining }}</span>
     </radial-progress-bar>
+    <div class="circle" v-if="this.timer !== null"></div>
   </div>
 </template>
 
@@ -23,7 +23,7 @@ export default {
   props: {
     diameter: {
       type: Number,
-      default: 600
+      default: 400
     },
     thickness: {
       type: Number,
@@ -120,19 +120,24 @@ export default {
   user-select: none;
 }
 
+.timer-container {
+  display: flex;
+  position: relative;
+  margin: 20px;
+}
+
 .timer-container:hover {
   cursor: pointer;
 }
 
-$circleWidth: 625px;
 .circle {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  height: $circleWidth;
-  width: $circleWidth;
-  border-radius: $circleWidth / 2;
+  height: 106%;
+  width: 106%;
+  border-radius: 53%;
   border: $primary solid 10px;
 }
 
