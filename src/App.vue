@@ -206,16 +206,16 @@ export default {
     },
     addTimer() {
       let time = this.newTimer.hours*3600 + this.newTimer.minutes*60 + this.newTimer.seconds;
-      if (time > 0) {
+      if (this.newTimer.name !== '' && time > 0) {
         this.timers.push({
           name: this.newTimer.name,
           time,
           running: false,
           resetTrigger: false,
         });
-        this.closeAddModal();
-        this.resetAddModal();
       }
+      this.closeAddModal();
+      this.resetAddModal();
     },
     loadFunction() {
       let loadFile = document.getElementById("f");
