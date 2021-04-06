@@ -27,7 +27,7 @@ export default {
     },
     thickness: {
       type: Number,
-      default: 25
+      default: 50
     },
     max: {
       type: Number,
@@ -98,7 +98,7 @@ export default {
       let hours = Math.floor(totalSeconds / 3600);
       let minutes = Math.floor(totalSeconds / 60) % 60;
       let seconds = totalSeconds % 60;
-      return `${hours > 0 ? hours+'h ' : ''}${minutes > 0 ? minutes+'m ' : ''}${(seconds>0 || (hours==0 && minutes==0)) ? seconds+'s' : ''}`
+      return `${hours > 0 ? hours+'h ' : (minutes > 0 ? minutes+'m ' : ((seconds>0 || (hours==0 && minutes==0)) ? seconds+'s' : ''))}`
     },
   },
   destroyed() {
@@ -119,7 +119,7 @@ export default {
   transform: translate(-50%, -50%);
   font-family: Avenir, Helvetica, Arial, sans-serif;
   font-weight: bold;
-  font-size: 80px;
+  font-size: 150px;
   white-space: nowrap;
   text-align: center;
   color: $primary;
@@ -144,7 +144,7 @@ export default {
   height: 106%;
   width: 106%;
   border-radius: 53%;
-  border: $primary solid 10px;
+  border: $primary solid 20px;
 }
 
 .hidden {
