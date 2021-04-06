@@ -36,6 +36,10 @@ export default {
     resetTrigger: {
       type: Boolean,
       default: false
+    },
+    running: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -67,6 +71,7 @@ export default {
             this.stop();
           }
         }, 1000)
+        this.$emit('update:running', true)
       } else {
         this.reset();
       }
@@ -74,6 +79,7 @@ export default {
     stop() {
       clearInterval(this.timer);
       this.timer = null;
+      this.$emit('update:running', false)
     },
     reset() {
       if (this.timer !== null) {

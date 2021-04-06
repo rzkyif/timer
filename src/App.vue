@@ -55,8 +55,17 @@
         <b-button type="is-text" @click="openAddModal">Add Timer</b-button>
       </div>
       <b-tabs id="timer-tabs" type="is-boxed" :animated="false">
-        <b-tab-item v-for="timer in displayTimers" :key="timer.name" :label="timer.name">
-          <Timer :max="timer.time" :resetTrigger="timer.resetTrigger" :diameter="windowMin*0.6"></Timer>
+        <b-tab-item v-for="timer in displayTimers" :key="timer.name">
+          <template #header>
+            <b-icon 
+              v-if="timer.running"
+              pack="fas"
+              icon="spinner"
+              custom-class="fa-pulse">
+            </b-icon>
+            <span>{{timer.name}}</span>
+          </template>
+          <Timer :max="timer.time" :resetTrigger="timer.resetTrigger" :diameter="windowMin*0.6" :running.sync="timer.running"></Timer>
           <b-button class="reset-button" @click="timer.resetTrigger = !timer.resetTrigger">Reset</b-button>
         </b-tab-item>
       </b-tabs>
@@ -104,31 +113,37 @@ export default {
         {
           name: 'Kegiatan',
           time: 30,
+          running: false,
           resetTrigger: false
         },
         {
           name: '30',
           time: 30,
+          running: false,
           resetTrigger: false
         },
         {
           name: '20',
           time: 20,
+          running: false,
           resetTrigger: false
         },
         {
           name: '15',
           time: 15,
+          running: false,
           resetTrigger: false
         },
         {
           name: '10',
           time: 10,
+          running: false,
           resetTrigger: false
         },
         {
           name: '5',
           time: 5,
+          running: false,
           resetTrigger: false
         }
       ],
@@ -136,9 +151,7 @@ export default {
         name: '',
         hours: 0,
         minutes: 0,
-        seconds: 0,
-        time: 0,
-        resetTrigger: false
+        seconds: 0
       },
       selected: null,
       isAddModalOpen: false,
@@ -184,7 +197,6 @@ export default {
       this.newTimer.hours = 0;
       this.newTimer.minutes = 0;
       this.newTimer.seconds = 0;
-      this.newTimer.time = 0;
     },
     openAddModal() {
       this.isAddModalOpen = true;
@@ -193,10 +205,10 @@ export default {
       this.isAddModalOpen = false;
     },
     addTimer() {
-      this.newTimer.time = this.newTimer.hours*3600 + this.newTimer.minutes*60 + this.newTimer.seconds
       this.timers.push({
         name: this.newTimer.name,
-        time: this.newTimer.time,
+        time: this.newTimer.hours*3600 + this.newTimer.minutes*60 + this.newTimer.seconds,
+        running: false,
         resetTrigger: false,
       });
       this.closeAddModal();
