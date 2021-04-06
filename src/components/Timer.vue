@@ -131,8 +131,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../scss/index.scss';
-
 .timer-center-text {
   position: absolute;
   left: 50%;
@@ -142,7 +140,6 @@ export default {
   font-weight: bold;
   white-space: nowrap;
   text-align: center;
-  color: $primary;
   user-select: none;
 }
 

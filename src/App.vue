@@ -302,6 +302,15 @@ export default {
 </script>
 
 <style lang="scss">
+$primary: #ffc400;
+@import "~bulma/sass/elements/button.sass";
+
+$primary: #24dcdc;
+$link: #4a4a4a;
+@import "~bulma/sass/utilities/_all";
+@import "~bulma";
+@import "~buefy/src/scss/buefy";
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

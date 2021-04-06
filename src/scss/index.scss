@@ -1,9 +1,0 @@
-$primary: #24dcdc;
-$link: #4a4a4a;
-$primary-light: findLightColor($primary);
-$primary-dark: findDarkColor($primary);
-$primary-invert: findColorInvert($primary);
-
-@import "~bulma/sass/utilities/_all";
-@import "~bulma";
-@import "~buefy/src/scss/buefy";
